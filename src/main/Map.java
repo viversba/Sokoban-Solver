@@ -6,11 +6,14 @@ public class Map {
 
 	public char[][] map;
 	public boolean[] goalPositions;
+	public boolean[] deadlock;
+	
 	
 	public Map(ArrayList<ArrayList<Character>> arrayMap, short maxLength) {
 		
 		map = new char[arrayMap.size()][maxLength];
 		goalPositions = new boolean[GetLength()];
+		deadlock = new boolean[GetLength()];
 		
 		for(int i=0; i<arrayMap.size(); i++) {
 			for(int j=0; j<maxLength; j++) {
@@ -37,6 +40,17 @@ public class Map {
 		}
 	}
 	
+	public void PrintDeadLocks() {
+		for(int i=0; i< deadlock.length; i++) {
+			if(isDeadLock(i)) System.err.println(i + " ");
+		}
+	}
+	
+	public void MarkAsNotDeadlock(int position) {
+		
+		deadlock[position] = true;
+	}
+	
 	public char GetCharAt(short pos) {
 		
 		return map[pos / map[0].length][pos % map[0].length];
@@ -60,5 +74,9 @@ public class Map {
 		for(short box : boxPositions)
 			if(!goalPositions[box]) return false;
 		return true;
+	}
+	
+	public boolean isDeadLock(int pos) {
+		return !deadlock[pos];
 	}
 }

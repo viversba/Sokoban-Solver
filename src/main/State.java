@@ -3,6 +3,7 @@ package main;
 public class State {
 
 	public short playerPos;
+	public short imaginaryBoxPos;
 	public short[] boxPositions;
 
 	public State() {}
@@ -10,6 +11,7 @@ public class State {
 	public State(short[] boxPositions, short playerPos) {
 		this.boxPositions = boxPositions.clone();
 		this.playerPos = playerPos;
+		this.imaginaryBoxPos = 0;
 	}
 	
 	public boolean Equals(State state) {

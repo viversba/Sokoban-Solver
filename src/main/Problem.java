@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import javax.swing.plaf.basic.BasicMenuUI.ChangeHandler;
 
@@ -134,12 +135,39 @@ public class Problem {
         }
         
         // Initialize Objects
-		initialState = new State(boxPositions, playerPos);
-		map = new Map(primitiveMap, maxLength);
-		search = new Search(type, new Node(initialState, null ,map), map);
+     	initialState = new State(boxPositions, playerPos);
+     	map = new Map(primitiveMap, maxLength);
+     	
+     	// Find deadlocks
+     	for (short goalPos : goals) {
+     		FindDeadLocksForGoal(goalPos);
+     	}
+     	
+     	search = new Search(type, new Node(initialState, null ,map), map);
 		
 		visited = new HashSet<State>();
 	}
 	
-	
+	public void FindDeadLocksForGoal(short initPos){
+		
+		Node parentNode =  new Node(initialState, null ,map);
+		initialState.imaginaryBoxPos = initPos;
+		LinkedList<Node> queue = new LinkedList<>();
+		HashSet<Integer> visited = new HashSet<>();
+		visited.add((int)(initPos));
+		queue.add(parentNode);
+		
+		while (queue.size() > 0) {
+			Node node = queue.pollFirst();
+			ArrayList<Node> children = node.PullExpand();
+			if (children.size() > 0) {
+				for (Node child : children) {
+					if(!visited.add((int)child.state.imaginaryBoxPos)){
+						map.MarkAsNotDeadlock(child.state.imaginaryBoxPos);
+						queue.addLast(child);
+					}
+				}
+			}
+		}
+	}
 }

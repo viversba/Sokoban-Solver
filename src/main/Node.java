@@ -70,7 +70,7 @@ public class Node {
 					if(state.playerPos >= map.GetWidth() * 2) {
 						short nextPos = (short) (state.playerPos - map.GetWidth() * 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] -= map.GetWidth();
@@ -105,7 +105,7 @@ public class Node {
 					if(state.playerPos < map.GetLength() - map.GetWidth() * 2) {
 						short nextPos = (short) (state.playerPos + map.GetWidth() * 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] += map.GetWidth();
@@ -140,7 +140,7 @@ public class Node {
 					if(state.playerPos % map.GetWidth() > 1) {
 						short nextPos = (short) (state.playerPos - 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] -= 1;
@@ -175,7 +175,7 @@ public class Node {
 					if(state.playerPos % map.GetWidth() < map.GetWidth() - 2) {
 						short nextPos = (short) (state.playerPos + 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] += 1;
@@ -193,6 +193,45 @@ public class Node {
 		
 		return children;
 	}
+	
+	public ArrayList<Node> PullExpand() {
+		  //up, down, left, right
+		  int[] moves = {-map.GetWidth(), map.GetWidth(),-1 , +1};
+	    char[] sMoves ={'u','d','l','r'};
+	    
+	    short pos = state.imaginaryBoxPos;
+	    boolean[] haveSpace = {
+	        (pos >= map.GetWidth()*2),
+	        (pos < map.GetLength() - map.GetWidth()*2),
+	        (pos % map.GetWidth() > 1),
+	        ((pos + 1)%map.GetWidth() > 1)
+	    };
+
+			ArrayList<Node> children = new ArrayList<Node>();
+	    for (int i = 0; i < 4; i++) {
+	      int dir  = moves[i];
+	      if (haveSpace[i]){
+	        short newBoxPos= (short) (pos +dir);
+	        short newPlayerPos= (short) (pos +(dir*2));
+	        char moveToPlayer = map.GetCharAt(newBoxPos);
+	        char moveToBox = map.GetCharAt(newPlayerPos);
+	        if((moveToPlayer == ' ' || moveToPlayer == '.')&&(moveToBox == ' ' || moveToBox == '.')) {
+	          // Check if there are no boxes on that position
+	          map.deadlock[newBoxPos] = true;
+	          state.imaginaryBoxPos = newBoxPos;
+	          State newState = new State(state.boxPositions, newPlayerPos);
+	          Node newChild = new Node(newState, this, map, sMoves[i]);
+	          if(!IsInPath(newChild)) {
+	            children.add(newChild);
+	          }
+
+
+	        }
+	      }
+	    }
+
+			return children;
+		}
 	
 	public int GetCount() {
         int count = 0;

@@ -35,7 +35,8 @@ public class Search {
 	public void SetHeuristics() {
 		
 	}
-	
+
+
 	public void Start() {
 		
 		switch(type) {

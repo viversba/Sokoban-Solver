@@ -7,6 +7,8 @@ public class Map {
 	public char[][] map;
 	public boolean[] goalPositions;
 	public boolean[] deadlock;
+	public static ArrayList<Integer> goalPositionsList;
+	public static int length;
 	
 	
 	public Map(ArrayList<ArrayList<Character>> arrayMap, short maxLength) {
@@ -14,6 +16,8 @@ public class Map {
 		map = new char[arrayMap.size()][maxLength];
 		goalPositions = new boolean[GetLength()];
 		deadlock = new boolean[GetLength()];
+		length = GetLength();
+		goalPositionsList = new ArrayList<>();
 		
 		for(int i=0; i<arrayMap.size(); i++) {
 			for(int j=0; j<maxLength; j++) {
@@ -25,6 +29,7 @@ public class Map {
 				// Each time a goal position is discovered, put it in a goalPositions array
 				if(map[i][j] == '.') {
 					goalPositions[maxLength * i + j] = true;
+					goalPositionsList.add(maxLength * i + j);
 				}
 			}
 		}

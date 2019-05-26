@@ -34,13 +34,9 @@ public class State {
 			short currentBoxPos = boxPositions[i];
 			for (int j = 0; j < Map.goalPositionsList.size(); j++) {
 				int currentBoxPosx = currentBoxPos / Map.MAPINSTANCE.GetWidth();
-				System.out.println("pos x caja "+currentBoxPosx);
 				int currentBoxPosy = currentBoxPos % Map.MAPINSTANCE.GetWidth();
-				System.out.println("pos y caja "+currentBoxPosy);
 				int currentGoalPosx = currentBoxPos /  Map.goalPositionsList.get(i);
-				System.out.println("pos x objetivo "+currentGoalPosx);
 				int currentGoalPosy = currentBoxPos % Map.goalPositionsList.get(i);
-				System.out.println("pos y objetivo "+currentGoalPosy);
 				int val = Math.abs(currentBoxPosx -currentGoalPosx) + Math.abs(currentBoxPosy-currentGoalPosy);
 			//	System.out.printf("State val en %d %d %d\n",i,j, val);
 				costMatriz[i][j] = val;

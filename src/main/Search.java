@@ -138,7 +138,6 @@ public class Search {
 			for (Node child : children) {
 				child.setCost(node.getCost()+1);
 				int prioridad = node.getCost() + h.calculatedHeuristic(child.getState().getCostMatriz());
-				System.out.printf("Search Prioridad %d\n",prioridad);
 				child.setPrioridad(prioridad);
 				pq.add(child);
 			}

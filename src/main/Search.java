@@ -1,9 +1,11 @@
 package main;
 
-import java.awt.List;
-import java.io.PrintStream;
+
+import sun.security.krb5.internal.crypto.Aes128;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class Search {
@@ -45,6 +47,9 @@ public class Search {
 				break;
 			case DFS:
 				DFS(startValue);
+				break;
+			case AStar:
+				AEstrella(startValue, new HungarianHeuristic());
 				break;
 		}
 	}
@@ -101,6 +106,41 @@ public class Search {
 				for (Node child : children) {
 					queue.addLast(child);
 				}
+			}
+			count++;
+		}
+
+		System.out.println();
+		if (!found) {
+			System.out.println("Solution not found");
+		}
+	}
+
+	void AEstrella(Node parentNode, Heuristic h) {
+
+		PriorityQueue<Node> pq = new PriorityQueue<>(new NodeComparator());
+		int cost = 0;
+		parentNode.setCost(cost);
+		pq.add(parentNode);
+		boolean found = false;
+		int count = 0;
+		while (pq.size() > 0) {
+			Node node = pq.poll();
+			if (map.GoalTest(node.state.boxPositions)) {
+				System.out.println();
+				System.out.println(node.PrintPath());
+				System.out.println("Solution found at iteration number: " + count);
+				System.out.println("Solution has depth: " + node.GetCount());
+				found = true;
+				return;
+			}
+			ArrayList<Node> children = node.Expand();
+			for (Node child : children) {
+				child.setCost(node.getCost()+1);
+				int prioridad = node.getCost() + h.calculatedHeuristic(child.getState().getCostMatriz());
+				System.out.printf("Search Prioridad %d\n",prioridad);
+				child.setPrioridad(prioridad);
+				pq.add(child);
 			}
 			count++;
 		}

@@ -8,15 +8,24 @@ public class Map {
 	public boolean[] goalPositions;
 	public boolean[] deadlock;
 	public static ArrayList<Integer> goalPositionsList;
-	public static int length;
+	public static Map MAPINSTANCE;
+
+	public static Map getInstanceMap(ArrayList<ArrayList<Character>> arrayMap, short maxLength) {
+		if (MAPINSTANCE == null){
+			MAPINSTANCE = new Map(arrayMap,maxLength);
+		}
+		else{
+			System.out.println("el mapa ya esta creado");
+		}
+
+		return MAPINSTANCE;
+	}
 	
-	
-	public Map(ArrayList<ArrayList<Character>> arrayMap, short maxLength) {
+	private Map(ArrayList<ArrayList<Character>> arrayMap, short maxLength) {
 		
 		map = new char[arrayMap.size()][maxLength];
 		goalPositions = new boolean[GetLength()];
 		deadlock = new boolean[GetLength()];
-		length = GetLength();
 		goalPositionsList = new ArrayList<>();
 		
 		for(int i=0; i<arrayMap.size(); i++) {

@@ -4,9 +4,9 @@ public class HungarianHeuristic implements Heuristic {
   @Override
   public int calculatedHeuristic(Object state) {
     int[][]matrizCostos = (int[][]) state;
-    int [][] init =new int[3][3];
-    for(int i = 0; i < 3; i++){
-      for (int j = 0; j <3; j++) {
+    int [][] init =new int[matrizCostos.length][matrizCostos[0].length];
+    for(int i = 0; i < matrizCostos.length; i++){
+      for (int j = 0; j <matrizCostos[i].length; j++) {
         init[i][j]= matrizCostos[i][j];
       }
     }
@@ -16,7 +16,7 @@ public class HungarianHeuristic implements Heuristic {
 
     for (int[] index:
         assignment ) {
-      System.out.println(index[0] +" "+index[1]);
+
       total += init[index[0]][index[1]];
     }
     return total;

@@ -12,7 +12,8 @@ public class Node {
 	public int cost;
 	
 	private Map map;
-	
+	private int prioridad = 0;
+
 	public Node(State state) {this(state, null);}
 	
 	public Node(State state , Node Parent) {
@@ -247,5 +248,25 @@ public class Node {
 		for(short place : state.boxPositions)
 			if (place == pos) return true;
 		return false;
+	}
+
+  public int getPrioridad() {
+		return this.prioridad;
+  }
+
+	public void setCost(int cost) {
+		this.cost= cost;
+	}
+
+	public int getCost() {
+		return this.cost;
+	}
+
+	public State getState() {
+		return this.state;
+	}
+
+	public void setPrioridad(int prioridad) {
+		this.prioridad = prioridad;
 	}
 }

@@ -30,9 +30,9 @@ public class Problem {
 			System.out.println("Usage: java Sokoban [-search_type] [input file name]");
 			return;
 		}
-		
+
 		Search.Type type = Search.Type.AStar;
-		
+
 		// Handle search type
 		switch (args[0]) {
 		case "-dfs":
@@ -136,7 +136,7 @@ public class Problem {
         
         // Initialize Objects
      	initialState = new State(boxPositions, playerPos);
-     	map = new Map(primitiveMap, maxLength);
+     	map = Map.getInstanceMap(primitiveMap, maxLength);
      	
      	// Find deadlocks
      	for (short goalPos : goals) {

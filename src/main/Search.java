@@ -49,7 +49,7 @@ public class Search {
 				DFS(startValue);
 				break;
 			case AStar:
-				AEstrella(startValue, new HungarianHeuristic());
+				AStar(startValue, new HungarianHeuristic());
 				break;
 		}
 	}
@@ -116,7 +116,7 @@ public class Search {
 		}
 	}
 
-	void AEstrella(Node parentNode, Heuristic h) {
+	void AStar(Node parentNode, Heuristic h) {
 
 		PriorityQueue<Node> pq = new PriorityQueue<>(new NodeComparator());
 		int cost = 0;
@@ -135,10 +135,11 @@ public class Search {
 				return;
 			}
 			ArrayList<Node> children = node.Expand();
+			System.out.println("Number of children: " + children.size());
 			for (Node child : children) {
 				child.setCost(node.getCost()+1);
-				int prioridad = node.getCost() + h.calculatedHeuristic(child.getState().getCostMatriz());
-				child.setPrioridad(prioridad);
+				int priority = child.getCost() + h.calculatedHeuristic(child.getState().getCostMatrix());
+				child.setPriority(priority);
 				pq.add(child);
 			}
 			count++;

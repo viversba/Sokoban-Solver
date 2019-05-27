@@ -12,7 +12,7 @@ public class Node {
 	public int cost;
 	
 	private Map map;
-	private int prioridad = 0;
+	private int priority = 0;
 
 	public Node(State state) {this(state, null);}
 	
@@ -55,7 +55,6 @@ public class Node {
 		if(state.playerPos >= map.GetWidth()) {
 			short newPos = (short) (state.playerPos - map.GetWidth());
 			char moveTo = map.GetCharAt(newPos);
-//			System.out.println();
 			// Check if the position is a goal point or an empty space
 			if(moveTo == ' ' || moveTo == '.') {
 				// Check if there are no boxes on that position
@@ -196,43 +195,43 @@ public class Node {
 	}
 	
 	public ArrayList<Node> PullExpand() {
-		  //up, down, left, right
-		  int[] moves = {-map.GetWidth(), map.GetWidth(),-1 , +1};
+		//up, down, left, right
+		int[] moves = {-map.GetWidth(), map.GetWidth(),-1 , +1};
 	    char[] sMoves ={'u','d','l','r'};
-	    
-	    short pos = state.imaginaryBoxPos;
-	    boolean[] haveSpace = {
+
+	    short pos = this.state.imaginaryBoxPos;
+		boolean[] haveSpace = {
 	        (pos >= map.GetWidth()*2),
 	        (pos < map.GetLength() - map.GetWidth()*2),
 	        (pos % map.GetWidth() > 1),
 	        ((pos + 1)%map.GetWidth() > 1)
 	    };
 
-			ArrayList<Node> children = new ArrayList<Node>();
+		ArrayList<Node> children = new ArrayList<Node>();
 	    for (int i = 0; i < 4; i++) {
-	      int dir  = moves[i];
-	      if (haveSpace[i]){
-	        short newBoxPos= (short) (pos +dir);
+	    	
+	    	if (haveSpace[i]){
+			int dir  = moves[i];
+	        short newBoxPos= (short) (pos + dir);
 	        short newPlayerPos= (short) (pos +(dir*2));
-	        char moveToPlayer = map.GetCharAt(newBoxPos);
-	        char moveToBox = map.GetCharAt(newPlayerPos);
-	        if((moveToPlayer == ' ' || moveToPlayer == '.')&&(moveToBox == ' ' || moveToBox == '.')) {
+	        char moveToPlayer = map.GetCharAt(newPlayerPos);
+	        char moveToBox = map.GetCharAt(newBoxPos);
+	        if((moveToPlayer == ' '|| moveToPlayer == '.')&&(moveToBox == ' ' || moveToBox == '.')) {
 	          // Check if there are no boxes on that position
 	          map.deadlock[newBoxPos] = true;
-	          state.imaginaryBoxPos = newBoxPos;
-	          State newState = new State(state.boxPositions, newPlayerPos);
+	          State newState = new State(state.boxPositions, state.playerPos);
+						newState.imaginaryBoxPos = newBoxPos;
+
 	          Node newChild = new Node(newState, this, map, sMoves[i]);
-	          if(!IsInPath(newChild)) {
-	            children.add(newChild);
-	          }
+						children.add(newChild);
 
 
 	        }
 	      }
 	    }
 
-			return children;
-		}
+		return children;
+	}
 	
 	public int GetCount() {
         int count = 0;
@@ -250,8 +249,8 @@ public class Node {
 		return false;
 	}
 
-  public int getPrioridad() {
-		return this.prioridad;
+  public int getPriority() {
+		return this.priority;
   }
 
 	public void setCost(int cost) {
@@ -266,7 +265,7 @@ public class Node {
 		return this.state;
 	}
 
-	public void setPrioridad(int prioridad) {
-		this.prioridad = prioridad;
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 }

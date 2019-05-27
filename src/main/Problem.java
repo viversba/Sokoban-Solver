@@ -152,17 +152,20 @@ public class Problem {
 		
 		Node parentNode =  new Node(initialState, null ,map);
 		initialState.imaginaryBoxPos = initPos;
+
 		LinkedList<Node> queue = new LinkedList<>();
 		HashSet<Integer> visited = new HashSet<>();
 		visited.add((int)(initPos));
 		queue.add(parentNode);
 		
 		while (queue.size() > 0) {
+			
 			Node node = queue.pollFirst();
 			ArrayList<Node> children = node.PullExpand();
+
 			if (children.size() > 0) {
 				for (Node child : children) {
-					if(!visited.add((int)child.state.imaginaryBoxPos)){
+					if(visited.add((int)child.state.imaginaryBoxPos)){
 						map.MarkAsNotDeadlock(child.state.imaginaryBoxPos);
 						queue.addLast(child);
 					}

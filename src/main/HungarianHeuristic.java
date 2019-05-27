@@ -1,17 +1,19 @@
 package main;
 
 public class HungarianHeuristic implements Heuristic {
-  @Override
+ 
+	@Override
   public int calculatedHeuristic(Object state) {
-    int[][]matrizCostos = (int[][]) state;
-    int [][] init =new int[matrizCostos.length][matrizCostos[0].length];
-    for(int i = 0; i < matrizCostos.length; i++){
-      for (int j = 0; j <matrizCostos[i].length; j++) {
-        init[i][j]= matrizCostos[i][j];
+	  
+    int[][] costMatrix = (int[][]) state;
+    int [][] init =new int[costMatrix.length][costMatrix[0].length];
+    for(int i = 0; i < costMatrix.length; i++){
+      for (int j = 0; j <costMatrix[i].length; j++) {
+        init[i][j]= costMatrix[i][j];
       }
     }
-    HungarianAlgorithm ha = new HungarianAlgorithm(matrizCostos);
-    int[][] assignment = ha.findOptimalAssignment();
+    HungarianAlgorithm algorithm = new HungarianAlgorithm(costMatrix);
+    int[][] assignment = algorithm.findOptimalAssignment();
     int total = 0;
 
     for (int[] index:

@@ -8,17 +8,17 @@ public class Map {
 	public boolean[] goalPositions;
 	public boolean[] deadlock;
 	public static ArrayList<Integer> goalPositionsList;
-	public static Map MAPINSTANCE;
+	public static Map MAP_INSTANCE;
 
 	public static Map getInstanceMap(ArrayList<ArrayList<Character>> arrayMap, short maxLength) {
-		if (MAPINSTANCE == null){
-			MAPINSTANCE = new Map(arrayMap,maxLength);
+		if (MAP_INSTANCE == null){
+			MAP_INSTANCE = new Map(arrayMap,maxLength);
 		}
 		else{
-			System.out.println("el mapa ya esta creado");
+			System.out.println("The map is already created");
 		}
 
-		return MAPINSTANCE;
+		return MAP_INSTANCE;
 	}
 	
 	private Map(ArrayList<ArrayList<Character>> arrayMap, short maxLength) {
@@ -56,8 +56,12 @@ public class Map {
 	
 	public void PrintDeadLocks() {
 		for(int i=0; i< deadlock.length; i++) {
-			if(isDeadLock(i)) System.err.println(i + " ");
+			if(isDeadLock(i)) {
+				System.out.printf("%c\t",'x');
+			}else System.out.printf(" \t");
+			if ((i+1)%GetWidth() == 0)System.out.println();
 		}
+		System.out.println();
 	}
 	
 	public void MarkAsNotDeadlock(int position) {

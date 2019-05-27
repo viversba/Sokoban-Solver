@@ -13,8 +13,11 @@ public class Utils {
   public static int CalculatedMinDistance(short pos1,short[] poss){
     int min = Integer.MAX_VALUE;
     for (int i = 0; i < poss.length; i++) {
-      int val = CalculatedManhattanDistance(pos1, poss[i]);
-      if (val < min) min = val;
+      if (!Map.MAPINSTANCE.goalPositions[poss[i]]){
+        int val = CalculatedManhattanDistance(pos1, poss[i]);
+        if (val < min) min = val;
+      }
+
     }
 
     return min;

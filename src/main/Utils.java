@@ -10,4 +10,13 @@ public class Utils {
     manhattanDistance= Math.abs(pos1X -pos2X) + Math.abs(pos1Y-pos2Y);
     return manhattanDistance;
   }
+  public static int CalculatedMinDistance(short pos1,short[] poss){
+    int min = Integer.MAX_VALUE;
+    for (int i = 0; i < poss.length; i++) {
+      int val = CalculatedManhattanDistance(pos1, poss[i]);
+      if (val < min) min = val;
+    }
+
+    return min;
+  }
 }

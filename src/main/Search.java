@@ -137,7 +137,8 @@ public class Search {
 			for (Node child : children) {
 				child.setCost(node.getCost()+1);
 				int priority = child.getCost() +  h.calculatedHeuristic(child.getState().getCostMatriz());
-				child.setPriority(priority);
+				int minDistance = Utils.CalculatedMinDistance(child.getState().playerPos,child.getState().boxPositions);
+				child.setPriority(priority+minDistance);
 				pq.add(child);
 			}
 			count++;

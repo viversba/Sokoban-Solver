@@ -180,7 +180,7 @@ public class Problem {
 		
 		Node parentNode =  new Node(initialState, null ,map);
 		initialState.imaginaryBoxPos = initPos;
-
+		map.MarkAsNotDeadlock(initPos);
 		LinkedList<Node> queue = new LinkedList<>();
 		HashSet<Integer> visited = new HashSet<>();
 		visited.add((int)(initPos));

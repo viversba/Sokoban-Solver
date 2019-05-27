@@ -20,7 +20,6 @@ public class Problem {
 	Search search;
 	State initialState;
 	Map map;
-	Node initialNode;
 	HashSet<State> visited;
 	short[] goalPositions;
 	

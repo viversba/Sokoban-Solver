@@ -1,8 +1,6 @@
 package main;
 
 
-import sun.security.krb5.internal.crypto.Aes128;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
@@ -138,8 +136,8 @@ public class Search {
 			ArrayList<Node> children = node.Expand();
 			for (Node child : children) {
 				child.setCost(node.getCost()+1);
-				int prioridad = child.getCost() +  h.calculatedHeuristic(child.getState().getCostMatriz());
-				child.setPrioridad(prioridad);
+				int priority = child.getCost() +  h.calculatedHeuristic(child.getState().getCostMatriz());
+				child.setPriority(priority);
 				pq.add(child);
 			}
 			count++;

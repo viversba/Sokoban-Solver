@@ -1,6 +1,5 @@
 package main;
 
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 
 public class Node {
@@ -12,7 +11,7 @@ public class Node {
 	public int cost;
 	
 	private Map map;
-	private int prioridad = 0;
+	private int priority = 0;
 
 	public Node(State state) {this(state, null);}
 	
@@ -247,8 +246,8 @@ public class Node {
 		return false;
 	}
 
-  public int getPrioridad() {
-		return this.prioridad;
+  public int getPriority() {
+		return this.priority;
   }
 
 	public void setCost(int cost) {
@@ -263,7 +262,7 @@ public class Node {
 		return this.state;
 	}
 
-	public void setPrioridad(int prioridad) {
-		this.prioridad = prioridad;
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 }

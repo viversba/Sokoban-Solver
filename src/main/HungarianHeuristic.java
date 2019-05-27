@@ -8,10 +8,10 @@ public class HungarianHeuristic implements Heuristic {
     Hungarian ha = new Hungarian(matrizCostos);
     int[] assignment = ha.execute();
     int total = 0;
-    int fila=0;
+    int row=0;
     for (int index:
         assignment ) {
-      total += matrizCostos[fila++][index];
+      total += matrizCostos[row++][index];
     }
     return total;
   }

@@ -144,6 +144,12 @@ public class Problem {
         	return;
         }
         
+        if(goals.size() != boxes.size()) {
+        	System.out.println("Fatal: Goal states and boxes number must match!");
+        	System.out.println("Quitting...");
+        	return;
+        }
+        
         // Store the initial position of the boxes in an array
         short[] boxPositions = new short[boxes.size()];
         for(int i=0; i<boxes.size(); i++) {

@@ -76,45 +76,67 @@ public class Problem {
         
         short boxCounter = 0, lineCounter = 0, playerPos = -1, maxLength = 0, length = 0;
         primitiveMap.add(new ArrayList<Character>());
+        
+        // Read the map
         while ((r = reader.read()) != -1) {
             char ch = (char) r;
-            
-            if(ch == '.') goals.add(boxCounter);
-            if(ch == '$' || ch == '*') { 
-            	if(ch == '*') {
-            		ch = '.';
-            		goals.add(boxCounter);
-            	}
-            	if(ch == '$') {
-            		ch = ' ';
-            	}
-            	boxes.add(boxCounter);
-            }
-            if(ch == '@' || ch == '+') {
-            	if(ch == '+') {
-            		ch = '.';
-            		goals.add(boxCounter);
-            	}
-            	if(ch == '@') {
-            		ch = ' ';
-            	}
-            	playerPos = boxCounter;
-            }
             
             if(ch == '\n') { 
             	lineCounter ++;
             	primitiveMap.add(new ArrayList<Character>());
             	maxLength = (short) Math.max((int) maxLength, (int) length);
             	length = 0;
+            	System.out.println();
             	continue;
             }
+            System.out.print(ch);
             
             boxCounter++;
             length++;
             primitiveMap.get(lineCounter).add(ch);
             
         }
+        System.out.println("\n");
         reader.close();
+        
+        // Complete the map
+        for(int i=0; i<primitiveMap.size(); i++) {
+			for(int j=0; j<maxLength; j++) {
+				// Add characters to complete map
+				if(primitiveMap.get(i).size() < maxLength) primitiveMap.get(i).add('#');
+			}
+		}
+        
+        // Extract player and box positions
+        for(int i=0; i<primitiveMap.size(); i++) {
+			for(int j=0; j<maxLength; j++) {
+				
+				boxCounter = (short)(maxLength * i + j);
+				char ch = primitiveMap.get(i).get(j);
+	            if(ch == '.') goals.add(boxCounter);
+	            if(ch == '$' || ch == '*') { 
+	            	if(ch == '*') {
+	            		ch = '.';
+	            		goals.add(boxCounter);
+	            	}
+	            	if(ch == '$') {
+	            		ch = ' ';
+	            	}
+	            	boxes.add(boxCounter);
+	            }
+	            if(ch == '@' || ch == '+') {
+	            	if(ch == '+') {
+	            		ch = '.';
+	            		goals.add(boxCounter);
+	            	}
+	            	if(ch == '@') {
+	            		ch = ' ';
+	            	}
+	            	playerPos = boxCounter;
+	            }
+	            primitiveMap.get(i).set(j, ch);
+			}
+		}
         
         // Handle Invalid Maps
         if(boxCounter == 0 || lineCounter == 0 || playerPos == -1) {
@@ -142,7 +164,8 @@ public class Problem {
      	for (short goalPos : goals) {
      		FindDeadLocksForGoal(goalPos);
      	}
-			map.PrintDeadLocks();
+		
+     	map.PrintDeadLocks();
      	search = new Search(type, new Node(initialState, null ,map), map);
 		
 		visited = new HashSet<State>();

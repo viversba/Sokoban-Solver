@@ -126,6 +126,7 @@ public class Search {
 		int count = 0;
 		while (pq.size() > 0) {
 			Node node = pq.poll();
+//			map.PrintWithState(node );
 			if (map.GoalTest(node.state.boxPositions)) {
 				System.out.println();
 				System.out.println(node.PrintPath());
@@ -137,7 +138,7 @@ public class Search {
 			ArrayList<Node> children = node.Expand();
 			for (Node child : children) {
 				child.setCost(node.getCost()+1);
-				int prioridad = node.getCost() +  h.calculatedHeuristic(child.getState().getCostMatriz());
+				int prioridad = child.getCost() +  h.calculatedHeuristic(child.getState().getCostMatriz());
 				child.setPrioridad(prioridad);
 				pq.add(child);
 			}

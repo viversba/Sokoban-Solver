@@ -35,6 +35,7 @@ public class State {
 		}
 		return -1;
 	}
+	
 	public void  makeCostMatriz(){
 		for (int i = 0; i < boxPositions.length; i++) {
 			short currentBoxPos = boxPositions[i];

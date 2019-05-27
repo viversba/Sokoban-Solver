@@ -54,6 +54,22 @@ public class Map {
 		}
 	}
 	
+	public void PrintWithState(Node node) {
+		
+		for(int i=0; i<map.length; i++) {
+			for(int j=0; j<map[i].length; j++) {
+				if(node.state.playerPos == GetWidth()*i + j) {
+					System.out.println("@");
+				}
+				else {
+					System.out.print(map[i][j]);
+				}
+			}
+			System.out.println();
+		}
+		System.out.println("\n");
+	}
+	
 	public void PrintDeadLocks() {
 		for(int i=0; i< deadlock.length; i++) {
 			if(isDeadLock(i)) {

@@ -67,7 +67,7 @@ public class Node {
 					if(state.playerPos >= map.GetWidth() * 2) {
 						short nextPos = (short) (state.playerPos - map.GetWidth() * 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) &&!map.isDeadLock(newPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] -= map.GetWidth();
@@ -102,7 +102,7 @@ public class Node {
 					if(state.playerPos < map.GetLength() - map.GetWidth() * 2) {
 						short nextPos = (short) (state.playerPos + map.GetWidth() * 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)&&!map.isDeadLock(newPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] += map.GetWidth();
@@ -137,7 +137,7 @@ public class Node {
 					if(state.playerPos % map.GetWidth() > 1) {
 						short nextPos = (short) (state.playerPos - 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)&&!map.isDeadLock(newPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] -= 1;
@@ -172,7 +172,7 @@ public class Node {
 					if(state.playerPos % map.GetWidth() < map.GetWidth() - 2) {
 						short nextPos = (short) (state.playerPos + 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)&&!map.isDeadLock(newPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] += 1;

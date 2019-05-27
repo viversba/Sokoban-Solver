@@ -1,22 +1,28 @@
 package main;
 
+import java.util.Arrays;
+
+
 public class State {
 
 	public short playerPos;
 	public short imaginaryBoxPos;
 	public short[] boxPositions;
-	public int[][] costMatriz;
+	public double[][] costMatriz;
 
 
 	public State(short[] boxPositions, short playerPos) {
 		this.boxPositions = boxPositions.clone();
 		this.playerPos = playerPos;
 		this.imaginaryBoxPos = 0;
-		this.costMatriz = new int[boxPositions.length][boxPositions.length];
+		this.costMatriz = new double[boxPositions.length][boxPositions.length];
 	}
 	
 	public boolean Equals(State state) {
-		
+		Arrays.sort(state.boxPositions);
+		Arrays.sort(this.boxPositions);
+
+
 		if (this.playerPos != state.playerPos) return false;
 		for(int i=0 ; i<this.boxPositions.length; i++)
 			if(this.boxPositions[i] != state.boxPositions[i]) return false;
@@ -33,13 +39,8 @@ public class State {
 		for (int i = 0; i < boxPositions.length; i++) {
 			short currentBoxPos = boxPositions[i];
 			for (int j = 0; j < Map.goalPositionsList.size(); j++) {
-				int currentBoxPosx = currentBoxPos / Map.MAPINSTANCE.GetWidth();
-				int currentBoxPosy = currentBoxPos % Map.MAPINSTANCE.GetWidth();
-				int currentGoalPosx = currentBoxPos /  Map.goalPositionsList.get(i);
-				int currentGoalPosy = currentBoxPos % Map.goalPositionsList.get(i);
-				int val = Math.abs(currentBoxPosx -currentGoalPosx) + Math.abs(currentBoxPosy-currentGoalPosy);
-			//	System.out.printf("State val en %d %d %d\n",i,j, val);
-				costMatriz[i][j] = val;
+
+				costMatriz[i][j] = Utils.CalculatedManhattanDistance(currentBoxPos, Map.goalPositionsList.get(i));
 			}
 			
 		}
@@ -53,7 +54,7 @@ public class State {
 		return sBuilder.toString();
 	}
 
-	public int[][] getCostMatriz() {
+	public double[][] getCostMatriz() {
 		makeCostMatriz();
 		return this.costMatriz;
 	}

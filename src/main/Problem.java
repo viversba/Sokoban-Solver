@@ -142,7 +142,7 @@ public class Problem {
      	for (short goalPos : goals) {
      		FindDeadLocksForGoal(goalPos);
      	}
-     	
+			map.PrintDeadLocks();
      	search = new Search(type, new Node(initialState, null ,map), map);
 		
 		visited = new HashSet<State>();
@@ -152,6 +152,7 @@ public class Problem {
 		
 		Node parentNode =  new Node(initialState, null ,map);
 		initialState.imaginaryBoxPos = initPos;
+
 		LinkedList<Node> queue = new LinkedList<>();
 		HashSet<Integer> visited = new HashSet<>();
 		visited.add((int)(initPos));
@@ -159,10 +160,13 @@ public class Problem {
 		
 		while (queue.size() > 0) {
 			Node node = queue.pollFirst();
+
 			ArrayList<Node> children = node.PullExpand();
+
 			if (children.size() > 0) {
 				for (Node child : children) {
-					if(!visited.add((int)child.state.imaginaryBoxPos)){
+					if(visited.add((int)child.state.imaginaryBoxPos)){
+
 						map.MarkAsNotDeadlock(child.state.imaginaryBoxPos);
 						queue.addLast(child);
 					}

@@ -1,18 +1,25 @@
 package main;
 
+import java.util.Arrays;
+
 public class testter {
   public static void main(String[] args) {
-    int[][] costMatiz ={{1,2},{2,1}};
-    int[][] mainMatriz = {{1,2},{2,1}};
+    double[][] costMatiz ={{200,1,2},{2,300,1},{1,2,400}};
+    //int[][] mainMatriz = {{200,1,2},{2,300,1},{1,2,400}};
+    Hungarian ha = new Hungarian(costMatiz);
+    int[] assignment = ha.execute();
+    //System.out.println("Bipartite Matching: " + Arrays.toString(result));
 
-    HungarianAlgorithm ha = new HungarianAlgorithm(costMatiz);
-    int[][] assignment = ha.findOptimalAssignment();
+    for (int i = 0; i < assignment.length; i++) {
+      System.out.println(assignment[i]);
+
+    }
     int total = 0;
-
-    for (int[] index:
+    int fila = 0;
+    for (int index:
         assignment ) {
 
-      total += mainMatriz[index[0]][index[1]];
+      total += costMatiz[fila++][index];
     }
     System.out.println(total);
 

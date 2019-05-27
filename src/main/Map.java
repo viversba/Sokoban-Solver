@@ -56,8 +56,12 @@ public class Map {
 	
 	public void PrintDeadLocks() {
 		for(int i=0; i< deadlock.length; i++) {
-			if(isDeadLock(i)) System.err.println(i + " ");
+			if(isDeadLock(i)) {
+				System.out.printf("%c\t",'x');
+			}else System.out.printf(" \t");
+			if ((i+1)%GetWidth() == 0)System.out.println();
 		}
+		System.out.println();
 	}
 	
 	public void MarkAsNotDeadlock(int position) {

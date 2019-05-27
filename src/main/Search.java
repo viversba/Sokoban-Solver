@@ -137,7 +137,7 @@ public class Search {
 			ArrayList<Node> children = node.Expand();
 			for (Node child : children) {
 				child.setCost(node.getCost()+1);
-				int prioridad = node.getCost() + h.calculatedHeuristic(child.getState().getCostMatriz());
+				int prioridad = node.getCost() +  h.calculatedHeuristic(child.getState().getCostMatriz());
 				child.setPrioridad(prioridad);
 				pq.add(child);
 			}

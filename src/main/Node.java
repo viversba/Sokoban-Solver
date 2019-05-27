@@ -31,10 +31,6 @@ public class Node {
 		this.movement = movement;
 	}
 	
-	public void SetMap(Map map) {
-		this.map = map;
-	}
-	
 	public boolean IsInPath (Node node) {
 		if(this.state.Equals(node.state))
 			return true;
@@ -71,7 +67,7 @@ public class Node {
 					if(state.playerPos >= map.GetWidth() * 2) {
 						short nextPos = (short) (state.playerPos - map.GetWidth() * 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) &&!map.isDeadLock(newPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] -= map.GetWidth();
@@ -106,7 +102,7 @@ public class Node {
 					if(state.playerPos < map.GetLength() - map.GetWidth() * 2) {
 						short nextPos = (short) (state.playerPos + map.GetWidth() * 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)&&!map.isDeadLock(newPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] += map.GetWidth();
@@ -141,7 +137,7 @@ public class Node {
 					if(state.playerPos % map.GetWidth() > 1) {
 						short nextPos = (short) (state.playerPos - 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)&&!map.isDeadLock(newPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] -= 1;
@@ -176,7 +172,7 @@ public class Node {
 					if(state.playerPos % map.GetWidth() < map.GetWidth() - 2) {
 						short nextPos = (short) (state.playerPos + 2);
 						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
+						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)&&!map.isDeadLock(newPos)) {
 							short[] newBoxPositions = state.boxPositions.clone();
 							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
 							newBoxPositions[boxToMoveIndex] += 1;
@@ -194,14 +190,14 @@ public class Node {
 		
 		return children;
 	}
-	
+
 	public ArrayList<Node> PullExpand() {
 		  //up, down, left, right
 		  int[] moves = {-map.GetWidth(), map.GetWidth(),-1 , +1};
 	    char[] sMoves ={'u','d','l','r'};
-	    
-	    short pos = state.imaginaryBoxPos;
-	    boolean[] haveSpace = {
+
+	    short pos = this.state.imaginaryBoxPos;
+			    boolean[] haveSpace = {
 	        (pos >= map.GetWidth()*2),
 	        (pos < map.GetLength() - map.GetWidth()*2),
 	        (pos % map.GetWidth() > 1),
@@ -210,21 +206,22 @@ public class Node {
 
 			ArrayList<Node> children = new ArrayList<Node>();
 	    for (int i = 0; i < 4; i++) {
-	      int dir  = moves[i];
 	      if (haveSpace[i]){
-	        short newBoxPos= (short) (pos +dir);
+					int dir  = moves[i];
+	        short newBoxPos= (short) (pos + dir);
+
 	        short newPlayerPos= (short) (pos +(dir*2));
-	        char moveToPlayer = map.GetCharAt(newBoxPos);
-	        char moveToBox = map.GetCharAt(newPlayerPos);
-	        if((moveToPlayer == ' ' || moveToPlayer == '.')&&(moveToBox == ' ' || moveToBox == '.')) {
+
+	        char moveToPlayer = map.GetCharAt(newPlayerPos);
+	        char moveToBox = map.GetCharAt(newBoxPos);
+	        if((moveToPlayer == ' '|| moveToPlayer == '.')&&(moveToBox == ' ' || moveToBox == '.')) {
 	          // Check if there are no boxes on that position
 	          map.deadlock[newBoxPos] = true;
-	          state.imaginaryBoxPos = newBoxPos;
-	          State newState = new State(state.boxPositions, newPlayerPos);
+	          State newState = new State(state.boxPositions, state.playerPos);
+						newState.imaginaryBoxPos = newBoxPos;
+
 	          Node newChild = new Node(newState, this, map, sMoves[i]);
-	          if(!IsInPath(newChild)) {
-	            children.add(newChild);
-	          }
+						children.add(newChild);
 
 
 	        }

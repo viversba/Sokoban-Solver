@@ -11,7 +11,7 @@ public class State {
 	public short[] boxPositions;
 	public double[][] costMatriz;
 	public ArrayList<PathNode> reachablePaths;
-	public boolean[] reachablePositions;
+	//public boolean[] reachablePositions;
 
 
 	public State(short[] boxPositions, short playerPos) {
@@ -19,13 +19,14 @@ public class State {
 		this.playerPos = playerPos;
 		this.imaginaryBoxPos = 0;
 		this.costMatriz = new double[boxPositions.length][boxPositions.length];
-		reachablePositions = new boolean[Map.MAPINSTANCE.GetLength()];
-		
-		reachablePaths = new ArrayList<PathNode>();
+		//reachablePositions = new boolean[Map.MAPINSTANCE.GetLength()];
+		reachablePaths = new ArrayList<>();
 		Arrays.sort(this.boxPositions);
 	}
 	
 	public boolean Equals(State state) {
+
+
 		if (this.playerPos != state.playerPos) return false;
 		for(int i=0 ; i<this.boxPositions.length; i++)
 			if(this.boxPositions[i] != state.boxPositions[i]) return false;
@@ -71,4 +72,35 @@ public class State {
 		makeCostMatriz();
 		return this.costMatriz;
 	}
+	public void Print() {
+
+		for(int i=0; i< Map.MAPINSTANCE.map.length; i++) {
+			for(int j=0; j<Map.MAPINSTANCE.map[i].length; j++) {
+				if( IsBoxOnSPot((short)(Map.MAPINSTANCE.GetWidth()*i + j)) ){
+					System.out.print('$');
+				}else if((Map.MAPINSTANCE.GetWidth()*i + j) == this.playerPos){
+					System.out.print('@');
+				}
+				else{
+					System.out.print(Map.MAPINSTANCE.map[i][j]);
+				}
+			}
+			System.out.println();
+		}
+	}
+
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append(playerPos);
+		sb.append(' ');
+		for (int bp:
+				 boxPositions) {
+			sb.append(bp);
+			sb.append(' ');
+		}
+		return sb.toString();
+	}
+
+
+
 }

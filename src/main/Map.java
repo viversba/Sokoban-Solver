@@ -87,7 +87,7 @@ public class Map {
 	
 	public char GetCharAt(short pos) {
 		
-		return pos<0 || pos>GetLength() ? null:  map[pos / map[0].length][pos % map[0].length];
+		return (pos<0 || pos>GetLength())? 'x':  map[pos / map[0].length][pos % map[0].length];
 	}
 	
 	public short GetLength() {
@@ -105,8 +105,11 @@ public class Map {
 	
 	public boolean GoalTest(short[] boxPositions) {
 		
-		for(short box : boxPositions)
+		for(short box : boxPositions){
+
 			if(!goalPositions[box]) return false;
+		}
+
 		return true;
 	}
 	

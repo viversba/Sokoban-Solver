@@ -42,12 +42,21 @@ public class Node {
 		this.movement = movement;
 	}
 	
-	public boolean IsInPath (Node node) {
+	public boolean IsInPath2 (Node node) {
 		if(this.state.Equals(node.state))
 			return true;
 		return Parent != null ? Parent.IsInPath(node) : false;
 	}
-	
+
+	public boolean IsInPath (Node node) {
+				Node parent = this.Parent;
+				while (parent != null){
+					if(parent.state.Equals(node.state)) return true;
+					parent = parent.Parent;
+				}
+				return false;
+	}
+
 	public String PrintPath() {
 		StringBuilder path = new StringBuilder();
 		path.append(movement);
@@ -56,53 +65,206 @@ public class Node {
 	
 	public ArrayList<Node> Expand() {
 		
-		ArrayList<Node> children = new ArrayList<Node>();
+		ArrayList<Node> children = new ArrayList<>();
 		FindReachablePaths();
-		
-		char actions[] = {'U', 'R', 'D', 'L'};
-		int movements[]= {- Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(),cost -1 };
-		
+
+		char[] actions = {'U', 'R', 'D', 'L'};
+		int[] movements = {-Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(), - 1};
+
 		for(int i=0; i<this.state.boxPositions.length; i++) {
 			short boxPos = this.state.boxPositions[i];
-			short[] newBoxPositions = this.state.boxPositions.clone();
+			//short[] newBoxPositions = this.state.boxPositions.clone();
 			for(int j=0; j<4; j++) {
+
 				int newPos = boxPos + movements[j];
 				int pushPos = boxPos + movements[(j+2)%4];
+
 				String pathString = GetPath(pushPos);
-				if(pathString != null) {
-					newBoxPositions[i] = (short)newPos;
-					Node childNode = new Node(new State(newBoxPositions, boxPos), this, pathString + actions[j]);
-					if(!IsInPath(childNode)) children.add(childNode);
+				if(pathString != null && !this.state.IsBoxOnSPot((short)newPos)&& !Map.MAPINSTANCE.isDeadLock(newPos) &&(Map.MAPINSTANCE.GetCharAt((short)newPos) == ' ' || Map.MAPINSTANCE.GetCharAt((short)newPos) == '.') ){
+					state.boxPositions[i] = (short)newPos;
+					Node childNode = new Node(new State(state.boxPositions, boxPos), this, pathString + actions[j]);
+					childNode.setCost(pathString.length()+1+this.getCost());
+					state.boxPositions[i] =  boxPos;
+					//if(!IsInPath(childNode))
+					children.add(childNode);
 				}
 			}
 		}
 		
 		return children;
 	}
-	
+
+	/*public ArrayList<Node> Expand2() {
+
+		ArrayList<Node> children = new ArrayList<Node>();
+		Map map = Map.MAPINSTANCE;
+		// Move up
+		if(state.playerPos >= map.GetWidth()) {
+			short newPos = (short) (state.playerPos - map.GetWidth());
+			char moveTo = map.GetCharAt(newPos);
+			// Check if the position is a goal point or an empty space
+			if(moveTo == ' ' || moveTo == '.') {
+				// Check if there are no boxes on that position
+				if(!this.state.IsBoxOnSPot(newPos)) {
+					State newState = new State(state.boxPositions, newPos);
+					Node newChild = new Node(newState, this, "u");
+					if(!IsInPath(newChild)) {
+						children.add(newChild);
+					}
+				}
+				else {
+					// If there is a box on that position, verify that it can be moved
+					if(state.playerPos >= map.GetWidth() * 2) {
+						short nextPos = (short) (state.playerPos - map.GetWidth() * 2);
+						char nextSpace = map.GetCharAt(nextPos);
+						if((nextSpace == ' ' || nextSpace == '.') && !this.state.IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
+							short[] newBoxPositions = state.boxPositions.clone();
+							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
+							newBoxPositions[boxToMoveIndex] -= map.GetWidth();
+							State newState = new State(newBoxPositions, newPos);
+							Node newChild = new Node(newState, this, map, "U");
+							if(!IsInPath(newChild)) {
+								children.add(newChild);
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		// Move up
+		if(state.playerPos < map.GetLength() - map.GetWidth()) {
+			short newPos = (short) (state.playerPos + map.GetWidth());
+			char moveTo = map.GetCharAt(newPos);
+			// Check if the position is a goal point or an empty space
+			if(moveTo == ' ' || moveTo == '.') {
+				// Check if there are no boxes on that position
+				if(!this.state.IsBoxOnSPot(newPos)) {
+					State newState = new State(state.boxPositions, newPos);
+					Node newChild = new Node(newState, this, "d");
+					if(!IsInPath(newChild)) {
+						children.add(newChild);
+					}
+				}
+				else {
+					// If there is a box on that position, verify that it can be moved
+					if(state.playerPos < map.GetLength() - map.GetWidth() * 2) {
+						short nextPos = (short) (state.playerPos + map.GetWidth() * 2);
+						char nextSpace = map.GetCharAt(nextPos);
+						if((nextSpace == ' ' || nextSpace == '.') && !this.state.IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
+							short[] newBoxPositions = state.boxPositions.clone();
+							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
+							newBoxPositions[boxToMoveIndex] += map.GetWidth();
+							State newState = new State(newBoxPositions, newPos);
+							Node newChild = new Node(newState, this, "D");
+							if(!IsInPath(newChild)) {
+								children.add(newChild);
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		// Move left
+		if(state.playerPos % map.GetWidth() > 0) {
+			short newPos = (short) (state.playerPos - 1);
+			char moveTo = map.GetCharAt(newPos);
+			// Check if the position is a goal point or an empty space
+			if(moveTo == ' ' || moveTo == '.') {
+				// Check if there are no boxes on that position
+				if(!this.state.IsBoxOnSPot(newPos)) {
+					State newState = new State(state.boxPositions, newPos);
+					Node newChild = new Node(newState, this, "l");
+					if(!IsInPath(newChild)) {
+						children.add(newChild);
+					}
+				}
+				else {
+					// If there is a box on that position, verify that it can be moved
+					if(state.playerPos % map.GetWidth() > 1) {
+						short nextPos = (short) (state.playerPos - 2);
+						char nextSpace = map.GetCharAt(nextPos);
+						if((nextSpace == ' ' || nextSpace == '.') && !this.state.IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
+							short[] newBoxPositions = state.boxPositions.clone();
+							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
+							newBoxPositions[boxToMoveIndex] -= 1;
+							State newState = new State(newBoxPositions, newPos);
+							Node newChild = new Node(newState, this, "L");
+							if(!IsInPath(newChild)) {
+								children.add(newChild);
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		// Move right
+		if(state.playerPos % map.GetWidth() < map.GetWidth() - 1) {
+			short newPos = (short) (state.playerPos + 1);
+			char moveTo = map.GetCharAt(newPos);
+			// Check if the position is a goal point or an empty space
+			if(moveTo == ' ' || moveTo == '.') {
+				// Check if there are no boxes on that position
+				if(!this.state.IsBoxOnSPot(newPos)) {
+					State newState = new State(state.boxPositions, newPos);
+					Node newChild = new Node(newState, this, "r");
+					if(!IsInPath(newChild)) {
+						children.add(newChild);
+					}
+				}
+				else {
+					// If there is a box on that position, verify that it can be moved
+					if(state.playerPos % map.GetWidth() < map.GetWidth() - 2) {
+						short nextPos = (short) (state.playerPos + 2);
+						char nextSpace = map.GetCharAt(nextPos);
+						if((nextSpace == ' ' || nextSpace == '.') && !this.state.IsBoxOnSPot(nextPos) && !map.isDeadLock(nextPos)) {
+							short[] newBoxPositions = state.boxPositions.clone();
+							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
+							newBoxPositions[boxToMoveIndex] += 1;
+							State newState = new State(newBoxPositions, newPos);
+							Node newChild = new Node(newState, this, "R");
+							if(!IsInPath(newChild)) {
+								children.add(newChild);
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		return children;
+	}
+	*/
 	public void FindReachablePaths() {
 		
 		PathNode startNode = new PathNode(state.playerPos, "");
 		LinkedList<PathNode> queue = new LinkedList<>();
 		queue.addFirst(startNode);
-		
-		HashSet<Short> hash = new HashSet<Short>();
+		this.state.AddPath(startNode);
+		HashSet<Short> hash = new HashSet<>();
 		hash.add(startNode.GetPosition());
-		
-		int movements[]= {- Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(),cost -1 };
-		char descriptions[] = {'u', 'r', 'd', 'l'};
+
+		int[] movements = {-Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(), - 1};
+		char[] descriptions = {'u', 'r', 'd', 'l'};
 		
 		while(queue.size() > 0) {
 			PathNode node = queue.pollFirst();
 			for(int i=0; i<4; i++) {
 				int mov = movements[i];
 				short newPosition = (short) (node.GetPosition() + mov);
-				if(hash.add(newPosition) && !this.state.IsBoxOnSPot(newPosition) && (Map.MAPINSTANCE.GetCharAt(newPosition) == ' ' ) || Map.MAPINSTANCE.GetCharAt(newPosition) == '.') {
+				if(hash.add(newPosition) && !this.state.IsBoxOnSPot(newPosition) && (Map.MAPINSTANCE.GetCharAt(newPosition) == ' ' || Map.MAPINSTANCE.GetCharAt(newPosition) == '.')) {
 					PathNode newPathNode = new PathNode(newPosition, node.GetPath() + descriptions[i]);
 					queue.addLast(newPathNode);
 					if(IsBoxAdjacentToPos(newPosition)) {
 						this.state.AddPath(newPathNode);
-						System.out.println(newPathNode.GetPath());
+						//System.out.println(newPathNode.GetPath());
+						//System.out.println(newPathNode.GetPosition());
 					}
 				}
 			}
@@ -117,8 +279,8 @@ public class Node {
 	}
 	
 	public boolean IsBoxAdjacentToPos(short position) {
-		
-		int movements[]= {- Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(),cost -1 };
+
+		int[] movements = {-Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(), - 1};
 		for(int i=0; i<4; i++)
 			if(this.state.IsBoxOnSPot((short)(position + movements[i]))) return true;
 
@@ -130,7 +292,7 @@ public class Node {
 		Map map = Map.MAPINSTANCE;
 		  //up, down, left, right
 		int[] moves = {-map.GetWidth(), map.GetWidth(),-1 , +1};
-	    char[] sMoves ={'u','d','l','r'};
+
 
 	    short pos = this.state.imaginaryBoxPos;
 	    boolean[] haveSpace = {
@@ -177,7 +339,7 @@ public class Node {
 	}
 
 	public void setCost(int cost) {
-		this.cost= cost;
+		this.cost = cost;
 	}
 
 	public int getCost() {

@@ -169,9 +169,9 @@ public class Problem {
      	for (short goalPos : goals) {
      		FindDeadLocksForGoal(goalPos);
      	}
-		
+			Map.MAPINSTANCE.PrintDeadLocks();
      	search = new Search(type, new Node(initialState, null ,map), map);
-		
+
 		visited = new HashSet<State>();
 	}
 	

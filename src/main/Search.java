@@ -1,10 +1,7 @@
 package main;
 
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class Search {
 
@@ -112,36 +109,39 @@ public class Search {
 	void AStar(Node parentNode, Heuristic h) {
 
 		PriorityQueue<Node> pq = new PriorityQueue<>(new NodeComparator());
+		HashSet<String> set = new HashSet<>();
 		int cost = 0;
 		parentNode.setCost(cost);
 		pq.add(parentNode);
-		boolean found = false;
+
 		int count = 0;
 		while (pq.size() > 0) {
 			Node node = pq.poll();
+			set.add(node.state.toString());
+			//node.getState().Print();
 			if (map.GoalTest(node.state.boxPositions)) {
 				System.out.println();
 				System.out.println(node.PrintPath());
 				System.out.println("Solution found at iteration number: " + count);
 				System.out.println("Solution has depth: " + node.GetCount());
-				found = true;
 				return;
 			}
+
 			ArrayList<Node> children = node.Expand();
 			for (Node child : children) {
-				child.setCost(node.getCost()+1);
-				int priority = child.getCost() +  h.calculatedHeuristic(child.getState().getCostMatriz());
-				int minDistance = Utils.CalculatedMinDistance(child.getState().playerPos,child.getState().boxPositions);
-				child.setPriority(priority+minDistance);
-				pq.add(child);
+				if(!set.contains(child.state.toString())){
+					int priority = child.getCost() +  h.calculatedHeuristic(child.getState().getCostMatriz());
+					int minDistance = Utils.CalculatedMinDistance(child.getState().playerPos,child.getState().boxPositions);
+					child.setPriority(priority+minDistance);
+					pq.add(child);
+				}
+
 			}
 			count++;
-			break;
 		}
 
 		System.out.println();
-		if (!found) {
-			System.out.println("Solution not found");
-		}
+		System.out.println("Solution not found");
+
 	}
 }

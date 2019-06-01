@@ -1,32 +1,44 @@
 package main;
 
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import org.omg.CORBA.PUBLIC_MEMBER;
+
+import com.sun.crypto.provider.AESParameters;
+import com.sun.security.auth.NTDomainPrincipal;
 
 public class Node {
 	
 	public Node Parent;
 	public State state;
-	public char movement;
+	public String movement;
 	
 	public int cost;
-	
-	private Map map;
 	private int priority = 0;
 
 	public Node(State state) {this(state, null);}
 	
 	public Node(State state , Node Parent) {
-		this(state, Parent, null, ' ');
+		this(state, Parent, null, " ");
 	}
 	
 	public Node(State state , Node Parent, Map map) {
-		this(state, Parent, map, ' ');
+		this(state, Parent, map, " ");
 	}
 	
-	public Node(State state , Node Parent, Map map, char movement) {
+	public Node(State state , Node Parent, String movement) {
 		this.Parent = Parent;
 		this.state = state;
-		this.map = map;
+		this.movement = movement;
+	}
+	
+	public Node(State state , Node Parent, Map map, String movement) {
+		this.Parent = Parent;
+		this.state = state;
 		this.movement = movement;
 	}
 	
@@ -45,190 +57,111 @@ public class Node {
 	public ArrayList<Node> Expand() {
 		
 		ArrayList<Node> children = new ArrayList<Node>();
+		FindReachablePaths();
 		
-		// Move up
-		if(state.playerPos >= map.GetWidth()) {
-			short newPos = (short) (state.playerPos - map.GetWidth());
-			char moveTo = map.GetCharAt(newPos);
-//			System.out.println();
-			// Check if the position is a goal point or an empty space
-			if(moveTo == ' ' || moveTo == '.') {
-				// Check if there are no boxes on that position
-				if(!IsBoxOnSPot(newPos)) {
-					State newState = new State(state.boxPositions, newPos);
-					Node newChild = new Node(newState, this, map, 'u');
-					if(!IsInPath(newChild)) {
-						children.add(newChild);
-					}
-				}
-				else {
-					// If there is a box on that position, verify that it can be moved
-					if(state.playerPos >= map.GetWidth() * 2) {
-						short nextPos = (short) (state.playerPos - map.GetWidth() * 2);
-						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
-							short[] newBoxPositions = state.boxPositions.clone();
-							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
-							newBoxPositions[boxToMoveIndex] -= map.GetWidth();
-							State newState = new State(newBoxPositions, newPos);
-							Node newChild = new Node(newState, this, map, 'U');
-							if(!IsInPath(newChild)) {
-								children.add(newChild);
-							}
-						}
-					}
-				}
-				
-			}
-		}
+		char actions[] = {'U', 'R', 'D', 'L'};
+		int movements[]= {- Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(),cost -1 };
 		
-		// Move up
-		if(state.playerPos < map.GetLength() - map.GetWidth()) {
-			short newPos = (short) (state.playerPos + map.GetWidth());
-			char moveTo = map.GetCharAt(newPos);
-			// Check if the position is a goal point or an empty space
-			if(moveTo == ' ' || moveTo == '.') {
-				// Check if there are no boxes on that position
-				if(!IsBoxOnSPot(newPos)) {
-					State newState = new State(state.boxPositions, newPos);
-					Node newChild = new Node(newState, this, map, 'd');
-					if(!IsInPath(newChild)) {
-						children.add(newChild);
-					}
+		for(int i=0; i<this.state.boxPositions.length; i++) {
+			short boxPos = this.state.boxPositions[i];
+			short[] newBoxPositions = this.state.boxPositions.clone();
+			for(int j=0; j<4; j++) {
+				int newPos = boxPos + movements[j];
+				int pushPos = boxPos + movements[(j+2)%4];
+				String pathString = GetPath(pushPos);
+				if(pathString != null) {
+					newBoxPositions[i] = (short)newPos;
+					Node childNode = new Node(new State(newBoxPositions, boxPos), this, pathString + actions[j]);
+					if(!IsInPath(childNode)) children.add(childNode);
 				}
-				else {
-					// If there is a box on that position, verify that it can be moved
-					if(state.playerPos < map.GetLength() - map.GetWidth() * 2) {
-						short nextPos = (short) (state.playerPos + map.GetWidth() * 2);
-						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
-							short[] newBoxPositions = state.boxPositions.clone();
-							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
-							newBoxPositions[boxToMoveIndex] += map.GetWidth();
-							State newState = new State(newBoxPositions, newPos);
-							Node newChild = new Node(newState, this, map, 'D');
-							if(!IsInPath(newChild)) {
-								children.add(newChild);
-							}
-						}
-					}
-				}
-				
-			}
-		}
-		
-		// Move left
-		if(state.playerPos % map.GetWidth() > 0) {
-			short newPos = (short) (state.playerPos - 1);
-			char moveTo = map.GetCharAt(newPos);
-			// Check if the position is a goal point or an empty space
-			if(moveTo == ' ' || moveTo == '.') {
-				// Check if there are no boxes on that position
-				if(!IsBoxOnSPot(newPos)) {
-					State newState = new State(state.boxPositions, newPos);
-					Node newChild = new Node(newState, this, map, 'l');
-					if(!IsInPath(newChild)) {
-						children.add(newChild);
-					}
-				}
-				else {
-					// If there is a box on that position, verify that it can be moved
-					if(state.playerPos % map.GetWidth() > 1) {
-						short nextPos = (short) (state.playerPos - 2);
-						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
-							short[] newBoxPositions = state.boxPositions.clone();
-							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
-							newBoxPositions[boxToMoveIndex] -= 1;
-							State newState = new State(newBoxPositions, newPos);
-							Node newChild = new Node(newState, this, map, 'L');
-							if(!IsInPath(newChild)) {
-								children.add(newChild);
-							}
-						}
-					}
-				}
-				
-			}
-		}
-		
-		// Move right
-		if(state.playerPos % map.GetWidth() < map.GetWidth() - 1) {
-			short newPos = (short) (state.playerPos + 1);
-			char moveTo = map.GetCharAt(newPos);
-			// Check if the position is a goal point or an empty space
-			if(moveTo == ' ' || moveTo == '.') {
-				// Check if there are no boxes on that position
-				if(!IsBoxOnSPot(newPos)) {
-					State newState = new State(state.boxPositions, newPos);
-					Node newChild = new Node(newState, this, map, 'r');
-					if(!IsInPath(newChild)) {
-						children.add(newChild);
-					}
-				}
-				else {
-					// If there is a box on that position, verify that it can be moved
-					if(state.playerPos % map.GetWidth() < map.GetWidth() - 2) {
-						short nextPos = (short) (state.playerPos + 2);
-						char nextSpace = map.GetCharAt(nextPos);
-						if((nextSpace == ' ' || nextSpace == '.') && !IsBoxOnSPot(nextPos)) {
-							short[] newBoxPositions = state.boxPositions.clone();
-							int boxToMoveIndex = state.GetIndexOfBoxAtPosition(newPos);
-							newBoxPositions[boxToMoveIndex] += 1;
-							State newState = new State(newBoxPositions, newPos);
-							Node newChild = new Node(newState, this, map, 'R');
-							if(!IsInPath(newChild)) {
-								children.add(newChild);
-							}
-						}
-					}
-				}
-				
 			}
 		}
 		
 		return children;
 	}
+	
+	public void FindReachablePaths() {
+		
+		PathNode startNode = new PathNode(state.playerPos, "");
+		LinkedList<PathNode> queue = new LinkedList<>();
+		queue.addFirst(startNode);
+		
+		HashSet<Short> hash = new HashSet<Short>();
+		hash.add(startNode.GetPosition());
+		
+		int movements[]= {- Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(),cost -1 };
+		char descriptions[] = {'u', 'r', 'd', 'l'};
+		
+		while(queue.size() > 0) {
+			PathNode node = queue.pollFirst();
+			for(int i=0; i<4; i++) {
+				int mov = movements[i];
+				short newPosition = (short) (node.GetPosition() + mov);
+				if(hash.add(newPosition) && !this.state.IsBoxOnSPot(newPosition) && (Map.MAPINSTANCE.GetCharAt(newPosition) == ' ' ) || Map.MAPINSTANCE.GetCharAt(newPosition) == '.') {
+					PathNode newPathNode = new PathNode(newPosition, node.GetPath() + descriptions[i]);
+					queue.addLast(newPathNode);
+					if(IsBoxAdjacentToPos(newPosition)) {
+						this.state.AddPath(newPathNode);
+						System.out.println(newPathNode.GetPath());
+					}
+				}
+			}
+		}
+	}
+	
+	public String GetPath(int pos) {
+		for(int i = 0; i<state.reachablePaths.size(); i++) {
+			if(state.reachablePaths.get(i).GetPosition() == pos) return state.reachablePaths.get(i).GetPath();
+		}
+		return null;
+	}
+	
+	public boolean IsBoxAdjacentToPos(short position) {
+		
+		int movements[]= {- Map.MAPINSTANCE.GetWidth(), 1, Map.MAPINSTANCE.GetWidth(),cost -1 };
+		for(int i=0; i<4; i++)
+			if(this.state.IsBoxOnSPot((short)(position + movements[i]))) return true;
+
+		return false;
+	} 
 
 	public ArrayList<Node> PullExpand() {
+		
+		Map map = Map.MAPINSTANCE;
 		  //up, down, left, right
-		  int[] moves = {-map.GetWidth(), map.GetWidth(),-1 , +1};
+		int[] moves = {-map.GetWidth(), map.GetWidth(),-1 , +1};
 	    char[] sMoves ={'u','d','l','r'};
 
 	    short pos = this.state.imaginaryBoxPos;
-			    boolean[] haveSpace = {
+	    boolean[] haveSpace = {
 	        (pos >= map.GetWidth()*2),
 	        (pos < map.GetLength() - map.GetWidth()*2),
 	        (pos % map.GetWidth() > 1),
 	        ((pos + 1)%map.GetWidth() > 1)
 	    };
 
-			ArrayList<Node> children = new ArrayList<Node>();
+		ArrayList<Node> children = new ArrayList<Node>();
 	    for (int i = 0; i < 4; i++) {
-	      if (haveSpace[i]){
-					int dir  = moves[i];
-	        short newBoxPos= (short) (pos + dir);
+	    	if (haveSpace[i]){
+				int dir  = moves[i];
+				short newBoxPos= (short) (pos + dir);
+				short newPlayerPos= (short) (pos +(dir*2));
+				char moveToPlayer = map.GetCharAt(newPlayerPos);
+				char moveToBox = map.GetCharAt(newBoxPos);
+				if((moveToPlayer == ' '|| moveToPlayer == '.')&&(moveToBox == ' ' || moveToBox == '.')) {
+					// Check if there are no boxes on that position
+					map.deadlock[newBoxPos] = true;
+					State newState = new State(state.boxPositions, state.playerPos);
+					newState.imaginaryBoxPos = newBoxPos;
 
-	        short newPlayerPos= (short) (pos +(dir*2));
-
-	        char moveToPlayer = map.GetCharAt(newPlayerPos);
-	        char moveToBox = map.GetCharAt(newBoxPos);
-	        if((moveToPlayer == ' '|| moveToPlayer == '.')&&(moveToBox == ' ' || moveToBox == '.')) {
-	          // Check if there are no boxes on that position
-	          map.deadlock[newBoxPos] = true;
-	          State newState = new State(state.boxPositions, state.playerPos);
-						newState.imaginaryBoxPos = newBoxPos;
-
-	          Node newChild = new Node(newState, this, map, sMoves[i]);
-						children.add(newChild);
-
-
-	        }
-	      }
+					Node newChild = new Node(newState, this, map, " ");
+					children.add(newChild);
+				}
+	    	}
 	    }
 
-			return children;
-		}
+		return children;
+	}
 	
 	public int GetCount() {
         int count = 0;
@@ -238,17 +171,10 @@ public class Node {
         count++;
         return count + Parent.GetCount();
     }
-	
-	public boolean IsBoxOnSPot(short pos) {
 
-		for(short place : state.boxPositions)
-			if (place == pos) return true;
-		return false;
-	}
-
-  public int getPriority() {
+	public int getPriority() {
 		return this.priority;
-  }
+	}
 
 	public void setCost(int cost) {
 		this.cost= cost;
@@ -262,7 +188,7 @@ public class Node {
 		return this.state;
 	}
 
-	public void setPriority(int priority) {
-		this.priority = priority;
+	public void setPriority(int prioridad) {
+		this.priority = prioridad;
 	}
 }

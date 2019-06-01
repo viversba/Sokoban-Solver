@@ -31,11 +31,6 @@ public class Search {
 		
 		Start();
 	}
-	
-	public void SetHeuristics() {
-		
-	}
-
 
 	public void Start() {
 		
@@ -47,7 +42,7 @@ public class Search {
 				DFS(startValue);
 				break;
 			case AStar:
-				AEstrella(startValue, new HungarianHeuristic());
+				AStar(startValue, new HungarianHeuristic());
 				break;
 		}
 	}
@@ -114,7 +109,7 @@ public class Search {
 		}
 	}
 
-	void AEstrella(Node parentNode, Heuristic h) {
+	void AStar(Node parentNode, Heuristic h) {
 
 		PriorityQueue<Node> pq = new PriorityQueue<>(new NodeComparator());
 		int cost = 0;
@@ -124,7 +119,6 @@ public class Search {
 		int count = 0;
 		while (pq.size() > 0) {
 			Node node = pq.poll();
-//			map.PrintWithState(node );
 			if (map.GoalTest(node.state.boxPositions)) {
 				System.out.println();
 				System.out.println(node.PrintPath());
@@ -142,6 +136,7 @@ public class Search {
 				pq.add(child);
 			}
 			count++;
+			break;
 		}
 
 		System.out.println();

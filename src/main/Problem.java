@@ -162,15 +162,14 @@ public class Problem {
         }
         
         // Initialize Objects
-     	initialState = new State(boxPositions, playerPos);
-     	map = Map.getInstanceMap(primitiveMap, maxLength);
+        map = Map.getInstanceMap(primitiveMap, maxLength);
+        initialState = new State(boxPositions, playerPos);
      	
      	// Find deadlocks
      	for (short goalPos : goals) {
      		FindDeadLocksForGoal(goalPos);
      	}
 		
-     	map.PrintDeadLocks();
      	search = new Search(type, new Node(initialState, null ,map), map);
 		
 		visited = new HashSet<State>();
